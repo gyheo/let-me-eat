@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Let Me Eat</title>
+  </head>
+  <body class="text-center">
+    <form id="form" class="form-layout" method="post" action="/answer" enctype="multipart/form-data" >
+      <h1 class="h1 mb-3 font-weight-normal">&#127849; 렛 미 잇 &#127856;</h1>
+      <img id="preview" name="image" width="50%" height="70%" src="{{ image_base64 }}"/>
+      <h3 class="h3 mb-3 font-weight-normal">촬영한 음식은 {{ data["predictions"][0]["label"] }}입니다!</h3>
+      <h2 class="h2 mb-3 font-weight-normal">🤖 ChatGPT에게 해당 음식 정보를 물어보세요!</h2>
+      <input id="kcal" type="button" class="btn btn-info btn-primary" value="열량정보" onclick="requestChatGPT(this)"></input>
+      <input id="well" type="button" class="btn btn-info btn-primary" value="잘 어울리는 음식" onclick="requestChatGPT(this)"></input>
+      <input id="caution" type="button" class="btn btn-info btn-primary" value="섭취 시 주의사항" onclick="requestChatGPT(this)"></input>
+      <a href="/" class="btn btn-primary">뒤로</a>
+    </form>
+  </body>
+  <script>
+    function requestChatGPT(ele) {
+      const form = document.querySelector("#form");
+      const kcalButton = document.querySelector("#kcal");
+      const wellButton = document.querySelector("#well");
+      const cautionButton = document.querySelector("#caution");
+
+      const question = ele.value;
+      const formData = new FormData(form);
+      
+      const questionField = document.createElement('input');
+      const labelField = document.createElement('input');
+  
+      questionField.type = 'hidden';
+      questionField.name = "question";
+      questionField.value = question;
+
+      labelField.type = 'hidden';
+      labelField.name = "label";
+      labelField.value = "{{ data["predictions"][0]["label"] }}";
+  
+      form.appendChild(questionField);
+      form.appendChild(labelField);
+
+      if (question === "열량정보") {
+        addLoading(kcalButton);
+
+        kcalButton.classList.add('disabled');
+        kcalButton.setAttribute("disabled", "disabled");
+        wellButton.classList.add('disabled');
+        wellButton.setAttribute("disabled", "disabled");
+        cautionButton.classList.add('disabled');
+        cautionButton.setAttribute("disabled", "disabled");
+      } else if (question === "잘 어울리는 음식") {
+        addLoading(wellButton);
+
+        wellButton.classList.add('disabled');
+        wellButton.setAttribute("disabled", "disabled");
+        kcalButton.classList.add('disabled');
+        kcalButton.setAttribute("disabled", "disabled");
+        cautionButton.classList.add('disabled');
+        cautionButton.setAttribute("disabled", "disabled");
+      } else {
+        addLoading(cautionButton);
+        
+        cautionButton.classList.add('disabled');
+        cautionButton.setAttribute("disabled", "disabled");
+        kcalButton.classList.add('disabled');
+        kcalButton.setAttribute("disabled", "disabled");
+        wellButton.classList.add('disabled');
+        wellButton.setAttribute("disabled", "disabled");
+      }
+
+      form.method = "post";
+      form.action = "/answer";
+      form.submit();
+    }
+
+    function removeLoading(btn) {
+      const spinnerSpan = document.getElementsByClassName("spinner-border spinner-border-sm")[0];
+      spinnerSpan.remove();
+    }
+    
+    function addLoading(btn) {
+      const spinnerSpan = document.createElement("span");
+      spinnerSpan.setAttribute("aria-hidden", "true");
+      spinnerSpan.setAttribute("role", "status");
+      spinnerSpan.className = "spinner-border spinner-border-sm";
+      
+      btn.appendChild(spinnerSpan);
+    }
+    
+  </script>
+</html>
