@@ -26,4 +26,10 @@
 
 ## 시연
 
-![let-me-eat](assets/let-me-eat.gif)
+### PC
+
+![pc](assets/pc.gif)
+
+### Mobile
+
+![mobile](assets/mobile.gif)
